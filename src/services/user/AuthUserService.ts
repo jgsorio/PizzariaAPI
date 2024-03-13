@@ -1,5 +1,6 @@
 import prismaClient from "../../prisma";
 import { compare } from "bcryptjs";
+import { sign } from 'jsonwebtoken';
 
 interface AuthRequest {
   email: string;
@@ -24,7 +25,15 @@ class AuthUserService {
       throw new Error('Invalid Credentials');
     }
 
-    return user;
+    const token = sign({
+      name: user.name,
+      email: user.email
+    }, process.env.JWT_TOKEN || "", {
+      subject: user.id,
+      expiresIn: '1d'
+    })
+
+    return {name: user.name, email: user.email, token};
   }
 }
 
