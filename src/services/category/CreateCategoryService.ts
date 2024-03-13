@@ -9,6 +9,16 @@ class CreateCategoryService {
     if (!name) {
       throw new Error('Name is required');
     }
+    
+    const categoryAlreadyExists = await prismaClient.category.findFirst({
+      where: {
+        name: name
+      }
+    });
+
+    if (categoryAlreadyExists) {
+      throw new Error('Category already exists');
+    }
 
     const category = await prismaClient.category.create(
       { 
